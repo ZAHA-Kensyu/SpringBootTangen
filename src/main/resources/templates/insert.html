@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>商品登録</title>
+  <link href="css/commons.css" rel="stylesheet">
+</head>
+
+<body>
+
+<th:block th:insert="common/header"></th:block>
+
+  <hr>
+
+  <div class="insert">
+    <div class="discription">
+      <p>
+        登録情報を入力してください（<span class="required"></span>は必須です）
+      </p>
+    </div>
+
+    <div class="form-body">
+      <p class="error">エラーメッセージ</p>
+
+      <form action="/insert" method="post" th:object="${formData}">
+        <fieldset class="label-130">
+          <div>
+            <label class="required">商品ID</label>
+            <input type="text" name="productId" class="base-text" th:field="*{productId}">
+            <div class="error" th:each="error: ${#fields.errors('productId')}">
+              [[ ${error} ]]
+            </div>
+          </div>
+          <div>
+            <label class="required">商品名</label>
+            <input type="text" name="name" class="base-text" th:field="*{name}">
+            <div class="error" th:each="error: ${#fields.errors('name')}">
+              [[ ${error} ]]
+            </div>
+          </div>
+          <div>
+            <label class="required">単価</label>
+            <input type="text" name="price" class="base-text" th:field="*{price}">
+            <div class="error" th:each="error: ${#fields.errors('price')}">
+              [[ ${error} ]]
+            </div>
+          </div>
+          <div class="select_block">
+            <label class="required">カテゴリ</label>
+            <select name="categoryId" class="base-text">
+              <option th:each="category : ${categoryLists}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+          </div>
+          <div>
+            <label>商品説明</label>
+            <textarea name="description" class="base-text"></textarea>
+          </div>
+          <div>
+            <label>画像</label>
+            <input type="file" name="file">
+            <!-- <span class="error">エラーメッセージ</span> -->
+          </div>
+        </fieldset>
+        <div class="btns">
+          <button type="button" onclick="openModal()" class="basic-btn">登録</button>
+          <input type="button" onclick="location.href='/menu'" value="戻る" class="cancel-btn">
+        </div>
+        <div id="modal">
+          <p class="modal-message">登録しますか？</p>
+          <div class="btns">
+            <button type="button" id="register-btn" class="basic-btn">登録</button>
+            <button type="button" onclick="closeModal()" class="cancel-btn">キャンセル</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="fadeLayer"></div>
+  <script src="./js/commons.js"></script>
+  <script>
+    'use strict'
+    document.getElementById('register-btn').addEventListener('click', () => {
+
+      const form = document.querySelector('form[action="/insert"]');
+      const formData = new FormData(form);
+      const product = formData.get('productId');
+      console.log(product);
+
+      fetch('/insert', {
+        method: 'POST',
+        body: formData
+      }).then(respone => {
+        if(respone.ok){
+          console.log("成功");
+          window.location.href = "/menu";
+        }else{
+          console.log("失敗");
+          window.location.href = "/insert";
+        }
+      })
+    })
+
+
+
+  </script>
+</body>
+
+</html>

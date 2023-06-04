@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>更新</title>
+  <link href="css/commons.css" rel="stylesheet">
+</head>
+
+<body>
+<th:block th:insert="common/header"></th:block>
+
+  <hr>
+
+  <div class="insert">
+    <div class="form-body">
+      <p class="error">エラーメッセージ</p>
+
+      <form action="menu.html" method="get">
+        <fieldset class="label-130">
+          <div>
+            <label>商品ID</label>
+            <input type="text" name="productId" th:value="${detailData.productId}" class="base-text">
+            <span class="error">エラーメッセージ</span>
+          </div>
+          <div>
+            <label>商品名</label>
+            <input type="text" name="name" th:value="${detailData.name}" class="base-text">
+            <span class="error">エラーメッセージ</span>
+          </div>
+          <div>
+            <label>単価</label>
+            <input type="text" name="price" th:value="${detailData.price}" class="base-text">
+            <span class="error">エラーメッセージ</span>
+          </div>
+          <div>
+            <label>カテゴリ</label>
+            <select name="categoryId" class="base-text">
+              <option value="${detailData.categoryId}" selected th:text="${detailData.categoryName}"></option>
+              <option value="1">ペン</option>
+              <option value="2">ノート</option>
+              <option value="3">消しゴム</option>
+              <option value="4">のり</option>
+            </select>
+          </div>
+          <div>
+            <label>商品説明</label>
+            <textarea name="description" class="base-text" th:text="${detailData.description}"></textarea>
+          </div>
+          <div>
+            <label>画像</label>
+            <input type="file" name="file">
+            <span class="error">エラーメッセージ</span>
+          </div>
+        </fieldset>
+        <div class="btns">
+          <button type="button" onclick="openModal()" class="basic-btn">更新</button>
+          <input type="button" onclick="location.href='/menu'" value="メニューに戻る" class="cancel-btn">
+        </div>
+        <div id="modal">
+          <p class="modal-message">更新しますか？</p>
+          <div class="btns">
+            <button type="button" id="update-btn" class="basic-btn">更新</button>
+            <button type="button" onclick="closeModal()" class="cancel-btn">キャンセル</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <span id="myId" th:text="${id}" style="visibility: hidden;"></span>
+  <div id="fadeLayer"></div>
+  <script src="./js/commons.js"></script>
+  <script>
+    'use strict'
+    document.getElementById('update-btn').addEventListener('click', () => {
+
+
+      const id = document.getElementById('myId').textContent;
+      const productId = document.querySelector('input[name="productId"]').value;
+      const name = document.querySelector('input[name="name"]').value;
+      const price = document.querySelector('input[name="price"]').value;
+      const categoryId = document.querySelector('select[name="categoryId"]').value;
+      const description = document.querySelector('textarea[name="description"]').value;
+
+
+      console.log(`categoryId ${categoryId}`);
+
+      const formData = {
+        'productId': productId,
+        'name': name,
+        'price': price,
+        'categoryId': categoryId,
+        'description': description,
+      };
+
+      console.log('/updateInput' + id);
+
+      fetch('/updateInput/' + id, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      }).then(respone => {
+        if (respone.ok) {
+          window.location.href = '/menu';
+        } else {
+          console.log("更新失敗");
+        }
+      }).catch(error => {
+        console.error("エラー:", error);
+      });
+
+      //location.href = '/menu'
+
+    })
+  </script>
+</body>
+
+</html>
