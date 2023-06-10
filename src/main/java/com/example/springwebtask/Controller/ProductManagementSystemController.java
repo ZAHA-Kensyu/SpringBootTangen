@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ProductManagementSystemController {
@@ -32,28 +33,13 @@ public class ProductManagementSystemController {
             return "index";
         }
 
-        System.out.println("indexにアクセスしました。");
-        System.out.println("Id"+loginData.getId());
-        System.out.println("PassWord"+loginData.getPassWord());
         var loginLists = pmsService.loginCheck(loginData);
-
-        for(var loginList : loginLists){
-            System.out.println("ログインチェックID"+loginList.getLoginId());
-            System.out.println("ログインチェックloginID"+loginList.getLoginId());
-            System.out.println("ログインチェックpassWord"+loginList.getPassWord());
-            System.out.println("ログインチェックname"+loginList.getName());
-            System.out.println("ログインチェックrole"+loginList.getRole());
-            System.out.println("ログインチェックcreated_at"+loginList.getCreated_at());
-            System.out.println("ログインチェックupdate_at"+loginList.getUpdate_at());
-        }
 
         if(!loginLists.isEmpty()){
             //セッションIDを保存
             httpSession.setAttribute("userSession",loginLists);
-            System.out.println("session "+httpSession.getAttribute("userSession"));
             return "redirect:/menu";
         }else{
-            System.out.println("ログインできません。");
             model.addAttribute("isLoginCheck",true);
             return "/index";
         }
@@ -64,7 +50,7 @@ public class ProductManagementSystemController {
         if(session.getAttribute("userSession") == null){
             return "redirect:/index";
         }
-        System.out.println("menuにアクセスしました");
+
         if(keyword == null){
             System.out.println("何もパラメーター入っていません");
             var menuDataList =  pmsService.getMenuData();
@@ -80,14 +66,21 @@ public class ProductManagementSystemController {
     }
 
     @PostMapping("/insert")
-    String postProductInsert(@Validated @ModelAttribute FormData formData, BindingResult bindingResult){
+    String postProductInsert(@Validated @ModelAttribute FormData formData, BindingResult bindingResult,Model model){
+
+        var categoryLists = pmsService.getCategory();
+        model.addAttribute("categoryLists",categoryLists);
+
+        if( pmsService.productIdCheck(formData.getProductId()) != null){
+            model.addAttribute("isProductIdCheck",true);
+            return "/insert";
+        }
+
         if(bindingResult.hasErrors()){
-            System.out.println("エラー");
             return "/insert";
         }else {
-            System.out.println("postInsertにアクセスしました");
             pmsService.insert(formData);
-            return "/menu";
+            return "redirect:/menu";
         }
     }
     @GetMapping("/insert")
@@ -102,33 +95,66 @@ public class ProductManagementSystemController {
     }
 
     @GetMapping("updateInput/{id}")
-    String getProductUpdate(@PathVariable int id,Model model,HttpSession session){
+    String getProductUpdate(@ModelAttribute FormData formData,@PathVariable int id,Model model,HttpSession session){
         if(session.getAttribute("userSession") == null){
             return "redirect:/index";
         }
 
-        var detailData = pmsService.findById(id);
-        if(detailData != null){
-            System.out.println("idをupdateに送ります。"+id);
-            model.addAttribute("id",id);
-            model.addAttribute("detailData",detailData);
-        }else{
-            model.addAttribute("id",id);
-        }
+        var detailData = pmsService.findById(id);//詳細画面のデータ取得
+        model.addAttribute("detailData",detailData);
+        formData.setProductId(detailData.getProductId());
+        formData.setName(detailData.getName());
+        formData.setPrice(detailData.getPrice());
+        formData.setDescription(detailData.getDescription());
+        model.addAttribute("formData",formData);
+        //カテゴリ表示
+        var category = pmsService.getCategory();//カテゴリ取得
+        model.addAttribute("categoryLists",category);
+
+        //POSTに飛ばす時にidを渡す。
+        model.addAttribute("id",id);
+
         return "updateInput";
     }
 
     @PostMapping("updateInput/{id}")
-    String postProductUpdate(@RequestBody FormData formData,@PathVariable int id){
-        System.out.println("postUpdate");
-        var number = pmsService.update(formData,id);
-        if(number!=0){
-            System.out.println("成功した");
-            return "menu";
-        }else{
-            return "updateInput";
+    String postProductUpdate(RedirectAttributes redirectAttributes, @Validated @ModelAttribute FormData formData, BindingResult bindingResult, @PathVariable int id, Model model){
+
+        System.out.println("入力された" + formData.getProductId());
+
+        System.out.println("POST送信受け取り");
+        var detailData = pmsService.findById(id);//詳細画面のデータ取得
+        //ここに移動
+        var category = pmsService.getCategory();//カテゴリ取得
+        model.addAttribute("categoryLists", category);
+        model.addAttribute("detailData", detailData);
+
+        //詳細データのIDと入力されたIDが同じじゃない場合重複しているか確認
+        if(!detailData.getProductId().equals(formData.getProductId())) {
+            //入力されたIDが重複していないか調べる。
+            System.out.println("重複チェック。");
+            if (pmsService.productIdCheck(formData.getProductId()) != null) {
+                model.addAttribute("isProductIdCheck", true);
+                System.out.println("エラー 重複項目がありました。");
+                return "/updateInput";
+            }
         }
 
+        if(bindingResult.hasErrors()){
+            System.out.println("更新エラー。");
+            for (var error : bindingResult.getFieldErrors()) {
+                System.out.println("フィールド: " + error.getField());
+                System.out.println(error.getDefaultMessage());
+            }
+            return "/updateInput";
+        }
+        else{
+            System.out.println("更新しました。");
+            //商品更新
+            pmsService.update(formData,id);
+            redirectAttributes.addFlashAttribute("message","更新が成功しました。");
+            return "redirect:/menu";
+        }
     }
 
     @GetMapping("detail/{id}")

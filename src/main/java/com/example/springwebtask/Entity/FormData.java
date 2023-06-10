@@ -30,6 +30,4 @@ public class FormData {
     //商品テキスト
     String description;
 
-    //商品画像
-    //String productImg;
 }

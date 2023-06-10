@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <title>商品登録</title>
-  <link href="css/commons.css" rel="stylesheet">
+  <link href="/css/commons.css" rel="stylesheet">
 </head>
 
 <body>
 
-<th:block th:insert="common/header"></th:block>
+  <th:block th:insert="/common/header"></th:block>
 
   <hr>
 
@@ -21,7 +21,10 @@
     </div>
 
     <div class="form-body">
-      <p class="error">エラーメッセージ</p>
+
+      <div th:if="${isProductIdCheck}">
+       <p class="error">商品IDが重複しています</p>
+      </div>
 
       <form action="/insert" method="post" th:object="${formData}">
         <fieldset class="label-130">
@@ -69,7 +72,7 @@
         <div id="modal">
           <p class="modal-message">登録しますか？</p>
           <div class="btns">
-            <button type="button" id="register-btn" class="basic-btn">登録</button>
+            <button type="submit" id="register-btn" class="basic-btn">登録</button>
             <button type="button" onclick="closeModal()" class="cancel-btn">キャンセル</button>
           </div>
         </div>
@@ -78,33 +81,33 @@
   </div>
 
   <div id="fadeLayer"></div>
-  <script src="./js/commons.js"></script>
-  <script>
+  <script src="/js/commons.js"></script>
+  <!-- <script>
     'use strict'
     document.getElementById('register-btn').addEventListener('click', () => {
 
-      const form = document.querySelector('form[action="/insert"]');
-      const formData = new FormData(form);
-      const product = formData.get('productId');
-      console.log(product);
+    //   const form = document.querySelector('form[action="/insert"]');
+    //   const formData = new FormData(form);
+    //   const product = formData.get('productId');
+    //   console.log(product);
 
-      fetch('/insert', {
-        method: 'POST',
-        body: formData
-      }).then(respone => {
-        if(respone.ok){
-          console.log("成功");
-          window.location.href = "/menu";
-        }else{
-          console.log("失敗");
-          window.location.href = "/insert";
-        }
-      })
-    })
+    //   fetch('/insert', {
+    //     method: 'POST',
+    //     body: formData
+    //   }).then(respone => {
+    //     if(respone.ok){
+    //       console.log("成功");
+    //       window.location.href = "/insert";
+    //     }else{
+    //       console.log("失敗");
+    //       window.location.href = "/insert";
+    //     }
+    //   })
+    // })
 
 
 
-  </script>
+  </script> -->
 </body>
 
 </html>

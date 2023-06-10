@@ -19,4 +19,7 @@ public interface ProductManagementSystemDao {
     List<MenuData> getSearchData(String keyword);
 
     int delete(String productId);
+
+
+    ProductData productIdCheck(String productId);
 }

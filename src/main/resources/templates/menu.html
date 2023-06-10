@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>メニュー</title>
-<link href="css/commons.css" rel="stylesheet">
-<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>メニュー</title>
+  <link href="css/commons.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
+
 <body>
   <div id="app">
     <th:block th:insert="common/header"></th:block>
@@ -16,7 +18,10 @@
       <div class="btn"><a class="basic-btn regist" href="/insert">新規登録</a></div>
       <div class="btn"><a class="basic-btn regist" href="category.html">カテゴリ管理</a></div>
     </div>
-    <p>成功メッセージ</p>
+    <!--更新成功か失敗かのメッセージ-->
+    <div th:if="${message}">
+      <p th:text="${message}"></p>
+    </div>
     <form method="get" action="/menu" class="search-form">
       <div class="order">
         <select name="order" class="base-text">
@@ -36,8 +41,10 @@
     </form>
 
     <table>
-        <div class="caption"><p>検索結果 : [[${number}]]件</p></div>
-        
+      <div class="caption">
+        <p>検索結果 : [[${number}]]件</p>
+      </div>
+
       <thead>
         <tr>
           <th>商品ID</th>
@@ -49,13 +56,13 @@
       </thead>
 
       <tbody>
-      <tr th:each="menuData : ${menuDataList}">
-        <td th:text = "${menuData.productId}"></td>
-        <td th:text = "${menuData.name}"></td>
-        <td th:text = "${menuData.price}"></td>
-        <td th:text = "${menuData.categoryName}"></td>
-        <td><a class="detail_btn" th:href="@{/detail/{id}(id=${menuData.id})}">詳細</a></td>
-      </tr>
+        <tr th:each="menuData : ${menuDataList}">
+          <td th:text="${menuData.productId}"></td>
+          <td th:text="${menuData.name}"></td>
+          <td th:text="${menuData.price}"></td>
+          <td th:text="${menuData.categoryName}"></td>
+          <td><a class="detail_btn" th:href="@{/detail/{id}(id=${menuData.id})}">詳細</a></td>
+        </tr>
       </tbody>
 
     </table>
@@ -64,4 +71,5 @@
   <footer></footer>
 
 </body>
+
 </html>

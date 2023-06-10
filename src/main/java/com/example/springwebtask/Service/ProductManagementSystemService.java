@@ -18,4 +18,6 @@ public interface ProductManagementSystemService {
     List<MenuData> getMenuData();
 
     List<MenuData> getSearchData(String keyword);
+
+    public ProductData productIdCheck(String productId);
 }

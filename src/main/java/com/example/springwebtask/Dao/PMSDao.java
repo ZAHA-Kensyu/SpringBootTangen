@@ -35,6 +35,14 @@ public class PMSDao implements ProductManagementSystemDao{
     }
 
     @Override
+    public ProductData productIdCheck(String productId){
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("product_id", productId);
+        var list = namedParameterJdbcTemplate.query("SELECT * FROM products WHERE product_id = :product_id",param,new DataClassRowMapper<>(ProductData.class));
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
     public List<Categories> getCategory(){
         var categoriesList = namedParameterJdbcTemplate.query("SELECT * FROM categories",new DataClassRowMapper<>(Categories.class));
         return categoriesList;

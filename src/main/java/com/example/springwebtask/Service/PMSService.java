@@ -33,6 +33,9 @@ public class PMSService implements ProductManagementSystemService{
     }
 
     @Override
+    public ProductData productIdCheck(String productId){return pmsDao.productIdCheck(productId);}
+
+    @Override
     public List<MenuData> getMenuData(){return pmsDao.getMenuData();}
 
     public List<MenuData> getSearchData(String keyword){System.out.println("PMSService"+keyword);return pmsDao.getSearchData(keyword);}

@@ -4,24 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <title>商品詳細</title>
-  <link href="css/commons.css" rel="stylesheet">
+  <link href="/css/commons.css" rel="stylesheet">
 </head>
 
 <body>
 
-<th:block th:insert="common/header"></th:block>
+  <th:block th:insert="/common/header"></th:block>
 
   <hr>
 
   <div class="update">
     <div class="form-body">
       <div class="img_block">
-        <img src="images/マッキー.png" class="product-img"><br>
+        <img src="/images/マッキー.png" class="product-img"><br>
       </div>
 
       <form action="delete" method="post">
         <fieldset class="label-130 product_block">
-          <p class="error">エラーメッセージ</p>
           <div>
             <label>商品ID</label>
             <input type="text" name="productId" th:value="${detailData.productId}" readonly class="base-text">
@@ -48,9 +47,9 @@
         <div>
           <div class="btns">
             <div th:if="${session.userSession[0].role == 1}">
-            <input type="button" onclick="openModal()" value="削除" class="basic-btn">
-            <input type="button" onclick="redirectToUpdate()" value="更新" class="basic-btn"
-              th:attr="dataId=${detailData.id}">
+              <input type="button" onclick="openModal()" value="削除" class="basic-btn">
+              <input type="button" onclick="redirectToUpdate()" value="更新" class="basic-btn"
+                th:attr="dataId=${detailData.id}">
             </div>
             <input type="button" onclick="location.href='/menu'" value="戻る" class="cancel-btn">
           </div>
@@ -66,27 +65,27 @@
     </div>
   </div>
   <div id="fadeLayer"></div>
-  <script src="./js/commons.js"></script>
+  <script src="/js/commons.js"></script>
   <script>
     'use strict'
+    
     document.getElementById('delete-btn').addEventListener('click', () => {
-      document.getElementById('delete-btn').addEventListener('click', () => {
-        //削除するidを送る
-        const productId = document.querySelector('input[name="productId"]').value;
+      //削除するidを送る
+      const productId = document.querySelector('input[name="productId"]').value;
 
-        fetch('/delete/' + productId, {
-          method: 'DELETE'
-        }).then(respone => {
-          if (respone.ok) {
-            window.location.href = '/menu';
-          } else {
-            console.log("更新失敗");
-          }
-        }).catch(error => {
-          console.error("エラー:", error);
-        });
-      })
+      fetch('/delete/' + productId, {
+        method: 'DELETE'
+      }).then(respone => {
+        if (respone.ok) {
+          window.location.href = '/menu';
+        } else {
+          console.log("更新失敗");
+        }
+      }).catch(error => {
+        console.error("エラー:", error);
+      });
     })
+
 
     function redirectToUpdate(id) {
       var productId = document.querySelector('[dataId]').getAttribute('dataId');
